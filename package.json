@@ -11,10 +11,12 @@
   "dependencies": {
     "@headlessui/react": "^1.6.2",
     "@heroicons/react": "^1.0.6",
+    "formik": "^2.2.9",
     "next": "12.1.6",
     "next-auth": "^4.3.4",
     "react": "18.1.0",
-    "react-dom": "18.1.0"
+    "react-dom": "18.1.0",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@types/node": "17.0.33",
