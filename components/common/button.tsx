@@ -22,9 +22,9 @@ const ButtonComponent: React.FC<Props> = (props) => {
     <button
       type={props.type}
       disabled={props.disabled}
-      onClick={(e) => e}
+      onClick={props.onClick}
       className={classNames(
-        "w-full inline-flex justify-center py-2 px-4 border  rounded-md shadow-sm  text-sm font-medium ",
+        "w-full inline-flex justify-center py-2 px-4 border  rounded-md shadow-sm  text-sm font-medium",
         props.btnColor == "primary"
           ? "border-transparent text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           : "border-gray-300 text-gray-500 hover:bg-gray-50 bg-white",
@@ -36,11 +36,11 @@ const ButtonComponent: React.FC<Props> = (props) => {
           <PulseLoader size={8} />
         </div>
       ) : (
-        <div>
+        <>
           <span className="pr-2">{props.text}</span>
           {props.icon}
           {props.children}
-        </div>
+        </>
       )}
     </button>
   );

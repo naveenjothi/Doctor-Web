@@ -143,7 +143,11 @@ const LoginPage: NextPage<Props> = (props) => {
                     text="Sign in with Google"
                     type="button"
                     btnColor="secondary"
-                    icon={<GoogleIcon />}
+                    icon={
+                      <div className="h-5 w-5">
+                        <GoogleIcon />
+                      </div>
+                    }
                     onClick={handleGoogleLogin}
                   />
                 </div>
