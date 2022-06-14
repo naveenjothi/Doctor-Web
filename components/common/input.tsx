@@ -5,15 +5,16 @@ import {
   FocusEvent,
   FocusEventHandler,
 } from "react";
+import ErrorComponent from "./error";
 
 type Props = {
   label: string;
   name: string;
   type: string;
-  required?: boolean;
   className?: string;
   disabled?: boolean;
   autoComplete?: string;
+  error?: string;
   onChange?: (
     e: ChangeEvent<HTMLInputElement>
   ) => ChangeEventHandler<HTMLInputElement> | void;
@@ -37,7 +38,6 @@ const InputComponent: React.FC<Props> = (props) => {
           name={props.name}
           type={props.type}
           autoComplete={props.autoComplete}
-          required={props.required}
           disabled={props.disabled}
           onChange={props.onChange}
           onBlur={props.onBlur}
@@ -47,6 +47,7 @@ const InputComponent: React.FC<Props> = (props) => {
           )}
         />
       </div>
+      <ErrorComponent message={props.error} />
     </div>
   );
 };

@@ -17,7 +17,7 @@ const LoginPage: NextPage<Props> = (props) => {
   const [error, setError] = useState(null);
   const router = useRouter();
   const formik = useFormik({
-    initialValues: { email: "", password: "" },
+    initialValues: { email: "", password: "", remember: false },
     validationSchema: Yup.object({
       email: Yup.string()
         .max(30, "Must be 30 characters or less")
@@ -75,30 +75,32 @@ const LoginPage: NextPage<Props> = (props) => {
                 name="email"
                 label="Email"
                 type="email"
-                required
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
+                error={formik.errors.email}
               />
               <InputComponent
                 label="Password"
                 name="password"
                 type="password"
                 autoComplete="current-password"
-                required
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
+                error={formik.errors.password}
               />
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <input
-                    id="remember-me"
-                    name="remember-me"
+                    id="remember"
+                    name="remember"
                     type="checkbox"
+                    checked={formik.values.remember}
+                    onChange={formik.handleChange}
                     className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                   />
                   <label
-                    htmlFor="remember-me"
+                    htmlFor="remember"
                     className="ml-2 block text-sm text-gray-900"
                   >
                     Remember me
