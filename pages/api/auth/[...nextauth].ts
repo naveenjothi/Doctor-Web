@@ -3,8 +3,12 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { login_user_query } from "@/graphql/queries/login-user.query";
-import { login_user_with_google_query } from "@/graphql/queries";
+import {
+  get_user_profile_query,
+  login_user_with_google_query,
+} from "@/graphql/queries";
 import axios from "axios";
+import { GetUserProfileQuery } from "@/graphql/models/get-user-profile.model";
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   if (req.query.nextauth.includes("callback") && req.method === "POST") {
@@ -114,13 +118,33 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
         }
         return true; // Do different verification for other providers that don't have `email_verified`
       },
-      session({ session, token }) {
+      async session({ session, token }) {
         // Return a cookie value as part of the session
         // This is read when `req.query.nextauth.includes("session") && req.method === "GET"`
         session.accessToken = token.accessToken;
-
+        try {
+          const response = await axios.post<GetUserProfileQuery>(
+            apiEndpoint,
+            {
+              query: get_user_profile_query,
+              variables: {},
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token.access_token}`,
+              },
+            }
+          );
+          const result = response.data?.data?.findOneUser;
+          session.user = { ...result };
+        } catch (error) {
+          console.log("[GetUserProfileQuery Error]", error);
+        }
         return session;
       },
+    },
+    session: {
+      strategy: "jwt",
     },
     secret: "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",
     debug: process.env.NODE_ENV === "development",

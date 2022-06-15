@@ -33,7 +33,7 @@ const ButtonComponent: React.FC<Props> = (props) => {
     >
       {props.loading ? (
         <div>
-          <PulseLoader size={8} />
+          <PulseLoader size={8} color="white" />
         </div>
       ) : (
         <>

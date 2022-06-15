@@ -26,18 +26,12 @@ const LoginPage: NextPage<Props> = (props) => {
       password: Yup.string().required("Please enter your password"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
-      const res: any = await signIn("credentials", {
+      await signIn("credentials", {
         redirect: true,
         email: values.email,
         password: values.password,
-        callbackUrl: `${window.location.origin}`,
+        callbackUrl: `/`,
       });
-      if (res?.error) {
-        setError(res.error);
-      } else {
-        setError(null);
-      }
-      if (res.url) router.push(res.url);
       setSubmitting(false);
     },
   });
