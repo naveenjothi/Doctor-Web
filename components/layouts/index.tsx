@@ -1,4 +1,6 @@
 import React from "react";
+import DefaultFooterComponent from "./footers";
+import DefaultHeaderComponent from "./headers";
 
 type Props = {
   children: JSX.Element;
@@ -6,8 +8,10 @@ type Props = {
 
 const DefaultLayoutComponent: React.FC<Props> = (props) => {
   return (
-    <div>
-      <main>{props.children}</main>
+    <div className="min-h-full">
+      <DefaultHeaderComponent />
+      <main className="-mt-24 pb-8">{props.children}</main>
+      <DefaultFooterComponent />
     </div>
   );
 };
