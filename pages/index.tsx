@@ -15,6 +15,7 @@ import {
 } from "@heroicons/react/outline";
 import { SearchIcon } from "@heroicons/react/solid";
 import { classNames } from "@/libs/utilities";
+import NextImage from "next/image";
 
 const user = {
   name: "Chelsea Hagon",
@@ -148,14 +149,6 @@ const Home: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </NextHead>
-      {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-gray-100">
-        <body class="h-full">
-        ```
-      */}
       <div className="min-h-full">
         <Popover
           as="header"
@@ -199,10 +192,14 @@ const Home: NextPage = () => {
                       <div>
                         <Menu.Button className="bg-white rounded-full flex text-sm ring-2 ring-white ring-opacity-20 focus:outline-none focus:ring-opacity-100">
                           <span className="sr-only">Open user menu</span>
-                          <img
-                            className="h-8 w-8 rounded-full"
+                          <NextImage
+                            className="rounded-full"
                             src={user.imageUrl}
-                            alt=""
+                            alt="User image"
+                            placeholder="blur"
+                            blurDataURL={user.imageUrl}
+                            height={32}
+                            width={32}
                           />
                         </Menu.Button>
                       </div>
@@ -328,10 +325,11 @@ const Home: NextPage = () => {
                         <div className="pt-3 pb-2">
                           <div className="flex items-center justify-between px-4">
                             <div>
-                              <img
-                                className="h-8 w-auto"
+                              <NextImage
                                 src="https://tailwindui.com/img/logos/workflow-mark-cyan-600.svg"
                                 alt="Workflow"
+                                height={32}
+                                width={32}
                               />
                             </div>
                             <div className="-mr-2">
@@ -356,10 +354,12 @@ const Home: NextPage = () => {
                         <div className="pt-4 pb-2">
                           <div className="flex items-center px-5">
                             <div className="flex-shrink-0">
-                              <img
+                              <NextImage
                                 className="h-10 w-10 rounded-full"
                                 src={user.imageUrl}
-                                alt=""
+                                alt="User Image"
+                                height={40}
+                                width={40}
                               />
                             </div>
                             <div className="ml-3 min-w-0 flex-1">
@@ -420,10 +420,12 @@ const Home: NextPage = () => {
                       <div className="sm:flex sm:items-center sm:justify-between">
                         <div className="sm:flex sm:space-x-5">
                           <div className="flex-shrink-0">
-                            <img
-                              className="mx-auto h-20 w-20 rounded-full"
+                            <NextImage
+                              className="mx-auto rounded-full"
                               src={user.imageUrl}
-                              alt=""
+                              alt="User Image"
+                              height={80}
+                              width={80}
                             />
                           </div>
                           <div className="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
@@ -610,10 +612,12 @@ const Home: NextPage = () => {
                             <li key={person.handle} className="py-4">
                               <div className="flex items-center space-x-4">
                                 <div className="flex-shrink-0">
-                                  <img
+                                  <NextImage
                                     className="h-8 w-8 rounded-full"
                                     src={person.imageUrl}
-                                    alt=""
+                                    alt="Person Image"
+                                    height={32}
+                                    width={32}
                                   />
                                 </div>
                                 <div className="flex-1 min-w-0">
