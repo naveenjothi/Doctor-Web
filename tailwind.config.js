@@ -1,3 +1,5 @@
+const colors = require("tailwindcss/colors");
+
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
@@ -11,6 +13,14 @@ module.exports = {
       lg: "1024px",
       xl: "1280px",
     },
+    extend: {
+      colors: {
+        sky: colors.sky,
+        teal: colors.teal,
+        cyan: colors.cyan,
+        rose: colors.rose,
+      },
+    },
   },
   variants: {
     extend: {},
@@ -19,5 +29,6 @@ module.exports = {
     require("@tailwindcss/forms"),
     require("@tailwindcss/typography"),
     require("@tailwindcss/aspect-ratio"),
+    require("@tailwindcss/line-clamp"),
   ],
 };

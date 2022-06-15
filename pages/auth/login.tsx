@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import { GetServerSidePropsContext, NextPage } from "next";
-import { getCsrfToken, signIn } from "next-auth/react";
+import { getCsrfToken, getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import * as Yup from "yup";
@@ -44,7 +44,6 @@ const LoginPage: NextPage<Props> = (props) => {
 
   const handleGoogleLogin = async () => {
     const res = await signIn("google");
-    console.log("res", res);
   };
   return (
     <>
@@ -164,6 +163,16 @@ const LoginPage: NextPage<Props> = (props) => {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const csrfToken = await getCsrfToken(context);
+  //TODO Need to check why redirect not working
+  const session = await getSession();
+  if (session) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/",
+      },
+    };
+  }
   return {
     props: { csrfToken },
   };

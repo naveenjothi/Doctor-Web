@@ -1,5 +1,9 @@
+html {
+  @apply h-full bg-gray-100;
+}
+
 body {
-  @apply text-base font-normal leading-normal text-gray-800;
+  @apply text-base font-normal leading-normal text-gray-800 h-full;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue",
     sans-serif;
   overflow-x: hidden;

@@ -4,6 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { login_user_query } from "@/graphql/queries/login-user.query";
 import { login_user_with_google_query } from "@/graphql/queries";
+import axios from "axios";
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   if (req.query.nextauth.includes("callback") && req.method === "POST") {
@@ -12,6 +13,8 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
       req.body
     );
   }
+
+  const apiEndpoint = process.env.API_ENDPOINT || "";
 
   return await NextAuth(req, res, {
     providers: [
@@ -43,22 +46,23 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
             email: credentials?.email,
             password: credentials?.password,
           };
-          const res = await fetch("http://localhost:9000/graphql", {
-            method: "POST",
-            body: JSON.stringify({
+          const response = await axios.post(
+            apiEndpoint,
+            {
               query: login_user_query,
               variables: {
                 payload,
               },
-            }),
-            headers: {
-              "Content-Type": "application/json",
-              "Accept-Language": "en-US",
             },
-          });
-          const result = await res?.json();
-          const user = result?.data?.loginUser;
-          return user || null;
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "Accept-Language": "en-US",
+              },
+            }
+          );
+          const result = response.data;
+          return result?.data?.loginUser;
         },
       }),
     ],
@@ -71,9 +75,6 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
     },
     callbacks: {
       async jwt({ token, user, account }) {
-        // if (account?.access_token) {
-        //   token.accessToken = account.access_token;
-        // }
         if (account && user) {
           return {
             ...token,
@@ -88,25 +89,28 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
         }
         return Promise.resolve("/");
       },
-      async signIn({ account, profile }) {
+      async signIn({ account, user }) {
         if (account?.provider === "google") {
           try {
-            const resp = await fetch("http://localhost:9000/graphql", {
-              method: "POST",
-              body: JSON.stringify({
+            const response = await axios.post(
+              apiEndpoint,
+              {
                 query: login_user_with_google_query,
                 variables: {},
-              }),
-              headers: {
-                "content-type": "application/json",
-                authorization: `Bearer ${account.access_token}`,
               },
-            });
-            const result = await resp.json();
-            return Boolean(result.data);
+              {
+                headers: {
+                  Authorization: `Bearer ${account.access_token}`,
+                },
+              }
+            );
+            const result = response.data;
+            return Boolean(result?.data);
           } catch (error) {
             return false;
           }
+        } else if (account.provider == "credentials") {
+          return Boolean(user);
         }
         return true; // Do different verification for other providers that don't have `email_verified`
       },
