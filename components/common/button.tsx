@@ -3,14 +3,14 @@ import React, { ReactElement } from "react";
 import PulseLoader from "react-spinners/PulseLoader";
 
 type Props = {
-  text: string;
+  text?: string;
   icon?: ReactElement;
   children?: JSX.Element;
   loading?: boolean;
   type: "submit" | "reset" | "button";
   disabled?: boolean;
   className?: string;
-  btnColor: "primary" | "secondary";
+  btnColor?: "primary" | "secondary";
   onClick?: () =>
     | React.MouseEventHandler<HTMLButtonElement>
     | void
@@ -37,7 +37,7 @@ const ButtonComponent: React.FC<Props> = (props) => {
         </div>
       ) : (
         <>
-          <span className="pr-2">{props.text}</span>
+          {props.text && <span className="pr-2">{props.text}</span>}
           {props.icon}
           {props.children}
         </>
