@@ -27,7 +27,7 @@ const LoginPage: NextPage<Props> = (props) => {
     }),
     onSubmit: async (values, { setSubmitting }) => {
       const res: any = await signIn("credentials", {
-        redirect: false,
+        redirect: true,
         email: values.email,
         password: values.password,
         callbackUrl: `${window.location.origin}`,
@@ -161,10 +161,9 @@ const LoginPage: NextPage<Props> = (props) => {
   );
 };
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const csrfToken = await getCsrfToken(context);
-  //TODO Need to check why redirect not working
-  const session = await getSession();
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const csrfToken = await getCsrfToken(ctx);
+  const session = await getSession({ ctx });
   if (session) {
     return {
       redirect: {
