@@ -2,20 +2,24 @@ import { useFormik } from "formik";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { getCsrfToken, getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useMemo } from "react";
 import * as Yup from "yup";
 import NextImage from "next/image";
 import InputComponent from "@/components/common/input";
 import ButtonComponent from "@/components/common/button";
 import GoogleIcon from "@/assets/svg/google-icon.svg";
+import ErrorComponent from "@/components/common/error";
 
 type Props = {
   csrfToken?: string;
 };
 
 const LoginPage: NextPage<Props> = (props) => {
-  const [error, setError] = useState(null);
   const router = useRouter();
+  let errorMsg = useMemo(() => {
+    if (router.query?.error == "CredentialsSignin")
+      return "Email or Password is Incorrect";
+  }, [router.query?.error]);
   const formik = useFormik({
     initialValues: { email: "", password: "", remember: false },
     validationSchema: Yup.object({
@@ -26,11 +30,12 @@ const LoginPage: NextPage<Props> = (props) => {
       password: Yup.string().required("Please enter your password"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
+      errorMsg = "";
       await signIn("credentials", {
         redirect: true,
         email: values.email,
         password: values.password,
-        callbackUrl: `/`,
+        callbackUrl: `${window.location.origin}`,
       });
       setSubmitting(false);
     },
@@ -42,7 +47,12 @@ const LoginPage: NextPage<Props> = (props) => {
   return (
     <>
       <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div
+          className="sm:mx-auto sm:w-full sm:max-w-md"
+          onClick={() => {
+            router.push("/");
+          }}
+        >
           <div className="text-center">
             <NextImage
               src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
@@ -70,7 +80,7 @@ const LoginPage: NextPage<Props> = (props) => {
                 type="email"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.errors.email}
+                error={formik.touched.email ? formik.errors.email : ""}
               />
               <InputComponent
                 label="Password"
@@ -79,7 +89,7 @@ const LoginPage: NextPage<Props> = (props) => {
                 autoComplete="current-password"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.errors.password}
+                error={formik.touched.password ? formik.errors.password : ""}
               />
 
               <div className="flex items-center justify-between">
@@ -110,6 +120,9 @@ const LoginPage: NextPage<Props> = (props) => {
                 </div>
               </div>
 
+              <div className="text-center">
+                <ErrorComponent message={errorMsg} />
+              </div>
               <div>
                 <ButtonComponent
                   text="Sign in"

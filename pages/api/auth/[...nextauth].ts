@@ -123,20 +123,20 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
         // This is read when `req.query.nextauth.includes("session") && req.method === "GET"`
         session.accessToken = token.accessToken;
         try {
-          const response = await axios.post<GetUserProfileQuery>(
-            apiEndpoint,
-            {
-              query: get_user_profile_query,
-              variables: {},
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token.access_token}`,
-              },
-            }
-          );
-          const result = response.data?.data?.findOneUser;
-          session.user = { ...result };
+          // const response = await axios.post<GetUserProfileQuery>(
+          //   apiEndpoint,
+          //   {
+          //     query: get_user_profile_query,
+          //     variables: {},
+          //   },
+          //   {
+          //     headers: {
+          //       Authorization: `Bearer ${token.access_token}`,
+          //     },
+          //   }
+          // );
+          // const result = response.data?.data?.findOneUser;
+          // session.user = { ...result };
         } catch (error) {
           console.log("[GetUserProfileQuery Error]", error);
         }

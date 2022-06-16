@@ -28,6 +28,7 @@ const ButtonComponent: React.FC<Props> = (props) => {
         props.btnColor == "primary"
           ? "border-transparent text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           : "border-gray-300 text-gray-500 hover:bg-gray-50 bg-white",
+        props.disabled && "opacity-50",
         props.className
       )}
     >
