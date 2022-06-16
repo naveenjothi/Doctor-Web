@@ -4,13 +4,14 @@ import {
   ChangeEventHandler,
   FocusEvent,
   FocusEventHandler,
+  HTMLInputTypeAttribute,
 } from "react";
 import ErrorComponent from "./error";
 
 type Props = {
   label: string;
   name: string;
-  type: string;
+  type: HTMLInputTypeAttribute;
   className?: string;
   disabled?: boolean;
   autoComplete?: string;
@@ -42,7 +43,7 @@ const InputComponent: React.FC<Props> = (props) => {
           onChange={props.onChange}
           onBlur={props.onBlur}
           className={classNames(
-            "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
+            "appearance-none block w-full px-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
             props.className
           )}
         />

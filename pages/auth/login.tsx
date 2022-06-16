@@ -9,6 +9,7 @@ import InputComponent from "@/components/common/input";
 import ButtonComponent from "@/components/common/button";
 import GoogleIcon from "@/assets/svg/google-icon.svg";
 import ErrorComponent from "@/components/common/error";
+import NextLink from "next/link";
 
 type Props = {
   csrfToken?: string;
@@ -24,10 +25,9 @@ const LoginPage: NextPage<Props> = (props) => {
     initialValues: { email: "", password: "", remember: false },
     validationSchema: Yup.object({
       email: Yup.string()
-        .max(30, "Must be 30 characters or less")
         .email("Invalid email address")
-        .required("Please enter your email"),
-      password: Yup.string().required("Please enter your password"),
+        .required("Email is required"),
+      password: Yup.string().required("Password is required"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
       errorMsg = "";
@@ -133,7 +133,18 @@ const LoginPage: NextPage<Props> = (props) => {
               </div>
             </form>
 
-            <div className="mt-6">
+            <div className="my-3 ">
+              <NextLink href="/auth/user-register">
+                <a href="#" className="font-medium text-sm">
+                  New User ?{" "}
+                  <span className=" text-indigo-600 hover:text-indigo-500">
+                    Register
+                  </span>
+                </a>
+              </NextLink>
+            </div>
+
+            <div>
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300" />
