@@ -9,6 +9,11 @@ import {
 } from "@/graphql/queries";
 import axios from "axios";
 import { GetUserProfileQuery } from "@/graphql/models/get-user-profile.model";
+import { GraphQLClient } from "graphql-request";
+import {
+  LoginUserQuery,
+  LoginUserWithGoogleQuery,
+} from "@/graphql/models/generated";
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   if (req.query.nextauth.includes("callback") && req.method === "POST") {
@@ -19,6 +24,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   }
 
   const apiEndpoint = process.env.API_ENDPOINT || "";
+  const client = new GraphQLClient(apiEndpoint);
 
   return await NextAuth(req, res, {
     providers: [
@@ -50,23 +56,12 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
             email: credentials?.email,
             password: credentials?.password,
           };
-          const response = await axios.post(
-            apiEndpoint,
-            {
-              query: login_user_query,
-              variables: {
-                payload,
-              },
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                "Accept-Language": "en-US",
-              },
-            }
+          const response = await client.request<LoginUserQuery>(
+            login_user_query,
+            { payload }
           );
-          const result = response.data;
-          return result?.data?.loginUser;
+          const result = response?.loginUser;
+          return result;
         },
       }),
     ],
@@ -96,20 +91,26 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
       async signIn({ account, user }) {
         if (account?.provider === "google") {
           try {
-            const response = await axios.post(
-              apiEndpoint,
+            const response = await client.request<LoginUserWithGoogleQuery>(
+              login_user_with_google_query,
+              {},
               {
-                query: login_user_with_google_query,
-                variables: {},
-              },
-              {
-                headers: {
-                  Authorization: `Bearer ${account.access_token}`,
-                },
+                Authorization: `Bearer ${account.access_token}`,
               }
             );
-            const result = response.data;
-            return Boolean(result?.data);
+            // const response = await axios.post(
+            //   apiEndpoint,
+            //   {
+            //     query: login_user_with_google_query,
+            //     variables: {},
+            //   },
+            //   {
+            //     headers: {
+            //       Authorization: `Bearer ${account.access_token}`,
+            //     },
+            //   }
+            // );
+            return Boolean(response?.loginUserWithGoogle);
           } catch (error) {
             return false;
           }

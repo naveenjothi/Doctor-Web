@@ -47,24 +47,22 @@ const LoginPage: NextPage<Props> = (props) => {
   return (
     <>
       <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div
-          className="sm:mx-auto sm:w-full sm:max-w-md"
-          onClick={() => {
-            router.push("/");
-          }}
-        >
-          <div className="text-center">
-            <NextImage
-              src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-              alt="Workflow"
-              height={48}
-              width={48}
-            />
-          </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
-          </h2>
-        </div>
+        <NextLink href="/">
+          <a className="sm:mx-auto sm:w-full sm:max-w-md">
+            <div className="text-center">
+              <NextImage
+                src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
+                alt="Workflow"
+                height={48}
+                width={48}
+                priority
+              />
+            </div>
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+              Sign in to your account
+            </h2>
+          </a>
+        </NextLink>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
