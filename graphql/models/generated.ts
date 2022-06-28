@@ -94,6 +94,13 @@ export type UserDto = {
   updatedBy?: Maybe<Scalars['String']>;
 };
 
+export type CreateUserMutationVariables = Exact<{
+  payload: CreateUserInput;
+}>;
+
+
+export type CreateUserMutation = { __typename?: 'Mutation', createUser: string };
+
 export type GetUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 

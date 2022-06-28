@@ -7,9 +7,10 @@ import * as Yup from "yup";
 import NextImage from "next/image";
 import InputComponent from "@/components/common/input";
 import ButtonComponent from "@/components/common/button";
-import GoogleIcon from "@/assets/svg/google-icon.svg";
 import ErrorComponent from "@/components/common/error";
 import NextLink from "next/link";
+import { handleCreateUser } from "@/graphql/hooks/user-hook";
+import { CreateUserInput } from "@/graphql/models/generated";
 
 type Props = {
   csrfToken?: string;
@@ -23,12 +24,13 @@ const UserRegisterPage: NextPage<Props> = (props) => {
       return "Email or Password is Incorrect";
   }, [router.query?.error]);
 
-  const formik = useFormik({
+  const formik = useFormik<CreateUserInput>({
     initialValues: {
       firstName: "",
       lastName: "",
       email: "",
       password: "",
+      providerId: "",
     },
     validationSchema: Yup.object({
       firstName: Yup.string()
@@ -51,16 +53,18 @@ const UserRegisterPage: NextPage<Props> = (props) => {
     }),
     onSubmit: async (values, { setSubmitting }) => {
       errorMsg = "";
-      console.log("values", values);
-      // await signIn("credentials", {
-      //   redirect: true,
-      //   email: values.email,
-      //   password: values.password,
-      //   callbackUrl: `${window.location.origin}`,
-      // });
+      const response = await handleCreateUser(values);
+      if (!response.createUser) errorMsg = "Unable to create user";
+      await signIn("credentials", {
+        redirect: true,
+        email: values.email,
+        password: values.password,
+        callbackUrl: `${window.location.origin}`,
+      });
       setSubmitting(false);
     },
   });
+
   return (
     <>
       <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -156,9 +160,11 @@ const UserRegisterPage: NextPage<Props> = (props) => {
                 </div>
               </div> */}
 
-              <div className="text-center">
-                <ErrorComponent message={errorMsg} />
-              </div>
+              {errorMsg && (
+                <div className="text-center">
+                  <ErrorComponent message={errorMsg} />
+                </div>
+              )}
               <div>
                 <ButtonComponent
                   text="Sign in"
