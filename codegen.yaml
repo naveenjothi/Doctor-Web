@@ -1,0 +1,9 @@
+overwrite: true
+schema:
+  - ${API_ENDPOINT}
+documents: "graphql/**/*.ts"
+generates:
+  graphql/models/generated.ts:
+    plugins:
+      - typescript
+      - typescript-operations

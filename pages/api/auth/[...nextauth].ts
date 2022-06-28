@@ -1,6 +1,19 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { login_user_query } from "@/graphql/queries/login-user.query";
+import {
+  get_user_profile_query,
+  login_user_with_google_query,
+} from "@/graphql/queries";
+import axios from "axios";
+import { GetUserProfileQuery } from "@/graphql/models/get-user-profile.model";
+import { GraphQLClient } from "graphql-request";
+import {
+  LoginUserQuery,
+  LoginUserWithGoogleQuery,
+} from "@/graphql/models/generated";
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   if (req.query.nextauth.includes("callback") && req.method === "POST") {
@@ -9,6 +22,9 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
       req.body
     );
   }
+
+  const apiEndpoint = process.env.API_ENDPOINT || "";
+  const client = new GraphQLClient(apiEndpoint);
 
   return await NextAuth(req, res, {
     providers: [
@@ -25,18 +41,44 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
           },
         },
       }),
+      CredentialsProvider({
+        name: "Email",
+        credentials: {
+          email: {
+            label: "email",
+            type: "email",
+            placeholder: "jsmith@example.com",
+          },
+          password: { label: "Password", type: "password" },
+        },
+        async authorize(credentials, req) {
+          const payload = {
+            email: credentials?.email,
+            password: credentials?.password,
+          };
+          const response = await client.request<LoginUserQuery>(
+            login_user_query,
+            { payload }
+          );
+          const result = response?.loginUser;
+          return result;
+        },
+      }),
     ],
     pages: {
-      signIn: "/auth/signin",
-      signOut: "/auth/signout",
-      error: "/auth/error", // Error code passed in query string as ?error=
-      verifyRequest: "/auth/verify-request", // (used for check email message)
-      newUser: "/auth/new-user", // New users will be directed here on first sign in (leave the property out if not of interest)
+      signIn: "/auth/login",
+      // signOut: "/auth/signout",
+      // error: "/auth/error", // Error code passed in query string as ?error=
+      // verifyRequest: "/auth/verify-request", // (used for check email message)
+      // newUser: "/auth/new-user", // New users will be directed here on first sign in (leave the property out if not of interest)
     },
     callbacks: {
-      async jwt({ token, account }) {
-        if (account?.access_token) {
-          token.accessToken = account.access_token;
+      async jwt({ token, user, account }) {
+        if (account && user) {
+          return {
+            ...token,
+            accessToken: user.accessToken,
+          };
         }
         return token;
       },
@@ -46,42 +88,66 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
         }
         return Promise.resolve("/");
       },
-      async signIn(params) {
-        if (params.account?.provider === "google") {
+      async signIn({ account, user }) {
+        if (account?.provider === "google") {
           try {
-            const resp = await fetch("http://localhost:9000/graphql", {
-              method: "POST",
-              body: JSON.stringify({
-                query: `query {
-                              loginUserWithGoogle{
-                                  email
-                              }
-                            }`,
-                variables: {},
-              }),
-              headers: {
-                "content-type": "application/json",
-                authorization: `Bearer ${params.account.access_token}`,
-              },
-            });
-            const result = await resp.json();
-
-            console.log("result", result);
-            return true;
+            const response = await client.request<LoginUserWithGoogleQuery>(
+              login_user_with_google_query,
+              {},
+              {
+                Authorization: `Bearer ${account.access_token}`,
+              }
+            );
+            // const response = await axios.post(
+            //   apiEndpoint,
+            //   {
+            //     query: login_user_with_google_query,
+            //     variables: {},
+            //   },
+            //   {
+            //     headers: {
+            //       Authorization: `Bearer ${account.access_token}`,
+            //     },
+            //   }
+            // );
+            return Boolean(response?.loginUserWithGoogle);
           } catch (error) {
             return false;
           }
+        } else if (account.provider == "credentials") {
+          return Boolean(user);
         }
         return true; // Do different verification for other providers that don't have `email_verified`
       },
-      session({ session, token }) {
+      async session({ session, token }) {
         // Return a cookie value as part of the session
         // This is read when `req.query.nextauth.includes("session") && req.method === "GET"`
         session.accessToken = token.accessToken;
-
+        try {
+          // const response = await axios.post<GetUserProfileQuery>(
+          //   apiEndpoint,
+          //   {
+          //     query: get_user_profile_query,
+          //     variables: {},
+          //   },
+          //   {
+          //     headers: {
+          //       Authorization: `Bearer ${token.access_token}`,
+          //     },
+          //   }
+          // );
+          // const result = response.data?.data?.findOneUser;
+          // session.user = { ...result };
+        } catch (error) {
+          console.log("[GetUserProfileQuery Error]", error);
+        }
         return session;
       },
     },
+    session: {
+      strategy: "jwt",
+    },
     secret: "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",
+    debug: process.env.NODE_ENV === "development",
   });
 }

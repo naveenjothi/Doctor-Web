@@ -1,0 +1,14 @@
+html {
+  @apply h-full bg-gray-100;
+}
+
+body {
+  @apply text-base font-normal leading-normal text-gray-800 h-full;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+    sans-serif;
+  overflow-x: hidden;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
