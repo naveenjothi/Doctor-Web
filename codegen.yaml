@@ -1,5 +1,6 @@
 overwrite: true
-schema: http://localhost:9000/graphql
+schema:
+  - ${API_ENDPOINT}
 documents: "graphql/**/*.ts"
 generates:
   graphql/models/generated.ts:
